@@ -1,0 +1,63 @@
+{
+  "name": "@shablonix/sdk",
+  "version": "0.3.1",
+  "description": "TypeScript SDK for the Shablonix document generation and email compile API",
+  "keywords": [
+    "shablonix",
+    "pdf",
+    "pdf-generation",
+    "email",
+    "templates",
+    "document-generation",
+    "webhooks",
+    "sdk"
+  ],
+  "homepage": "https://shablonix.online",
+  "bugs": {
+    "email": "shablonix@radiantsoftware.eu"
+  },
+  "license": "MIT",
+  "author": "Radiant Software Ltd <shablonix@radiantsoftware.eu>",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "pnpm run build && node --test ./test/**/*.test.mjs ./test/**/*.test.cjs",
+    "lint:package": "publint --strict && attw --pack .",
+    "prepublishOnly": "pnpm run typecheck && pnpm run test && pnpm run lint:package"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "publint": "^0.3.24",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}
