@@ -29,7 +29,7 @@ const { Shablonix } = require('@shablonix/sdk'); // CommonJS
 | `generatePdf({ async: true })`, `generatePdfAndWait()` | A pending job, then poll or webhook | Yes, 72 h |
 | `generatePdfStream()`, `generatePdfBytes()` | The file itself in the response | No |
 
-`generate()`, `generateStream()`, and `generateBytes()` take a `format` (`pdf`, `png`, `html`, `docx`) and work the same way.
+`generate()`, `generateStream()`, and `generateBytes()` take a `format` (`pdf`, `html`, `docx`) and work the same way.
 
 ## Generate a PDF
 

@@ -434,18 +434,18 @@ test('generateBytes forwards the idempotency key and format Accept header', asyn
 
   await withServer(async (req, res) => {
     received = req.headers;
-    res.setHeader('content-type', 'image/png');
-    res.setHeader('x-shablonix-generation-id', 'gen_png');
+    res.setHeader('content-type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('x-shablonix-generation-id', 'gen_docx');
     res.setHeader('x-shablonix-output-retention', 'temporary');
     res.end(Buffer.from([137, 80, 78, 71]));
   }, async (baseUrl) => {
     const client = new Shablonix('tf_live_test_key', { baseUrl });
     const bytes = await client.generateBytes(
-      { templateId: 'tpl', data: {}, format: 'png' },
+      { templateId: 'tpl', data: {}, format: 'docx' },
       { idempotencyKey: 'order-4815-receipt' },
     );
 
-    assert.equal(received.accept, 'image/png');
+    assert.equal(received.accept, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     assert.equal(received['idempotency-key'], 'order-4815-receipt');
     assert.deepEqual([...bytes], [137, 80, 78, 71]);
   });
@@ -532,4 +532,20 @@ test('default fetch keeps a global receiver (Cloudflare Workers reject this.fetc
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+test('getGeneration never sends the API key to another origin', async () => {
+  const calls = [];
+  const client = new Shablonix({
+    apiKey: 'tf_live_test_key',
+    baseUrl: 'https://api.shablonix.example',
+    fetch: async (url, init) => {
+      calls.push([url, init.headers.get('Authorization')]);
+      return new Response('{}', { status: 200 });
+    },
+  });
+
+  await assert.rejects(client.getGeneration('https://untrusted-host.example/collect'));
+  await assert.rejects(client.getGeneration({ statusUrl: '//untrusted-host.example/collect' }));
+  assert.deepEqual(calls, []);
 });

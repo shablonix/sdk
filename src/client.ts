@@ -102,11 +102,10 @@ const DEFAULT_TIMEOUT_MS = 30_000;
 // Synchronous generation can wait up to 60s for a worker on the server, so the
 // client must outlast it or it aborts a render the server still completes and bills.
 const DEFAULT_SYNC_GENERATION_TIMEOUT_MS = 90_000;
-const SDK_HEADER_VALUE = '@shablonix/sdk ts/0.3.1';
+const SDK_HEADER_VALUE = '@shablonix/sdk ts/0.4.0';
 
 const CONTENT_TYPES: Record<OutputFormat, string> = {
   pdf: 'application/pdf',
-  png: 'image/png',
   html: 'text/html',
   docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 };
@@ -884,11 +883,16 @@ export class Shablonix {
     body?: unknown,
     options: RequestOptions = {},
   ): Promise<Response> {
-    const url = new URL(path, ensureTrailingSlash(this.baseUrl)).toString();
+    const base = new URL(ensureTrailingSlash(this.baseUrl));
+    const url = new URL(path, base).toString();
     const headers = new Headers(options.headers);
     headers.set('X-Shablonix-SDK', SDK_HEADER_VALUE);
 
     if (options.auth !== false) {
+      // A status URL can come from stored or untrusted data; the key only goes to baseUrl.
+      if (new URL(url).origin !== base.origin) {
+        throw new ShablonixError(`Refusing to send the API key to ${new URL(url).origin}`);
+      }
       headers.set('Authorization', `Bearer ${this.apiKey}`);
     }
 

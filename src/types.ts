@@ -1,4 +1,4 @@
-export type OutputFormat = 'pdf' | 'png' | 'html' | 'docx';
+export type OutputFormat = 'pdf' | 'html' | 'docx';
 
 export type GenerationStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
